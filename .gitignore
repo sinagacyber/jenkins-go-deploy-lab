@@ -1,0 +1,12 @@
+# Go build output
+/dist/
+*.exe
+
+# Local deployment data (never commit deployed binaries)
+/deploy/
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

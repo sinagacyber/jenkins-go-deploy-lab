@@ -1,0 +1,26 @@
+FROM jenkins/jenkins:2.580.2-jdk21
+
+USER root
+
+ARG GO_VERSION=1.27.3
+ARG GO_SHA256=65efbc80fdc1fa2cd2631cad5b481777a68e8725f34e89f50fc6ac714e379b40
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl git file \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSLo /tmp/go.tgz "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" \
+    && echo "${GO_SHA256}  /tmp/go.tgz" | sha256sum -c - \
+    && rm -rf /usr/local/go \
+    && tar -C /usr/local -xzf /tmp/go.tgz \
+    && rm /tmp/go.tgz
+
+ENV PATH="/usr/local/go/bin:${PATH}"
+ENV GOPATH="/var/jenkins_home/go"
+
+RUN jenkins-plugin-cli --plugins "workflow-aggregator git pipeline-stage-view"
+
+# The named volume in compose is initialized with this directory ownership.
+RUN mkdir -p /opt/demo-app && chown -R jenkins:jenkins /opt/demo-app
+
+USER jenkins
