@@ -92,9 +92,10 @@ pipeline {
 
                     mv -f "$DEPLOY_DIR/${APP_NAME}.new" "$DEPLOY_DIR/$APP_NAME"
 
-                    # Start the newly deployed binary as a background process.
-                    nohup "$DEPLOY_DIR/$APP_NAME" \\
-                      > "$DEPLOY_DIR/${APP_NAME}.log" 2>&1 < /dev/null &
+                    # Start application as a persistent background process.
+                    JENKINS_NODE_COOKIE=dontKillMe nohup "$DEPLOY_DIR/$APP_NAME" \
+                    > "$DEPLOY_DIR/${APP_NAME}.log" 2>&1 < /dev/null &
+
                     NEW_PID=$!
                     echo "$NEW_PID" > "$DEPLOY_DIR/${APP_NAME}.pid"
                     echo "Started ${APP_NAME} with PID ${NEW_PID}"
